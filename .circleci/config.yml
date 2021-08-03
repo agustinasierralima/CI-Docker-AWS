@@ -1,0 +1,44 @@
+version: 2.1
+orbs:
+
+jobs:
+  deploy-into-aws:
+    parameters:
+        ec2-host:
+          type: string
+        branch-name:
+          type: string
+    machine:
+      enabled: true
+    steps:
+      - run:
+          name: Pull the git code
+          command: ssh ec2-user@<<parameters.ec2-host>> git pull origin <<parameters.branch-name>>
+      - run:
+          name: Stop the running docker containers
+          command: ssh ec2-user@<<parameters.ec2-host>> docker-compose down --v
+      - run:
+          name: Restart the containers
+          command: ssh ec2-user@<<parameters.ec2-host>> docker-compose up --build -d
+      - run:
+          name: Run the migrations
+          command: ssh ec2-user@<<parameters.ec2-host>> "docker exec ic-web rake db:migrate"
+workflows:
+  build-and-deploy:
+    jobs:
+      # Deploy staging
+      - deploy-into-aws:
+          ec2-host: "${STA_EC2_HOST}"
+          branch-name: "staging"
+          filters:
+            branches:
+              only:
+                - staging
+      # Deploy PROD
+      - deploy-into-aws:
+          ec2-host: "${RC_EC2_HOST}"
+          branch-name: "produccion"
+          filters:
+            branches:
+              only:
+                - produccion
