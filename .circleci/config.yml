@@ -29,7 +29,7 @@ workflows:
       # Deploy staging
       - deploy-into-aws:
           ec2-host: "${STA_EC2_HOST}"
-          branch-name: "staging"
+          branch-name: "main"
           filters:
             branches:
               only:
