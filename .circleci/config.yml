@@ -13,6 +13,9 @@ jobs:
     steps:
       - run:
           name: Pull the git code
+          command: echo <<parameters.ec2-host>>
+      - run:
+          name: Pull the git code
           command: ssh ec2-user@<<parameters.ec2-host>> git pull origin <<parameters.branch-name>>
       - run:
           name: Stop the running docker containers
