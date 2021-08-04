@@ -16,22 +16,22 @@ jobs:
           command: echo $ec2_host
       - run:
           name: Pull the git code
-          command: ssh ec2-user@${STA_EC2_HOST} git pull origin <<parameters.branch-name>>
+          command: ssh ec2-user@$ec2_host git pull origin <<parameters.branch-name>>
       - run:
           name: Stop the running docker containers
-          command: ssh ec2-user@<<parameters.ec2-host>> docker-compose down --v
+          command: ssh ec2-user@<$ec2_host docker-compose down --v
       - run:
           name: Restart the containers
-          command: ssh ec2-user@<<parameters.ec2-host>> docker-compose up --build -d
+          command: ssh ec2-user@$ec2_host docker-compose up --build -d
       - run:
           name: Run the migrations
-          command: ssh ec2-user@<<parameters.ec2-host>> "docker exec ic-web rake db:migrate"
+          command: ssh ec2-user@$ec2_host "docker exec ic-web rake db:migrate"
 workflows:
   build-and-deploy:
     jobs:
       # Deploy staging
       - deploy-into-aws:
-          ec2-host: "${STA_EC2_HOST}"
+          ec2-host: $ec2_host
           branch-name: "main"
           filters:
             branches:
