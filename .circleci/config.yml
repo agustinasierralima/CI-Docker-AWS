@@ -13,7 +13,7 @@ jobs:
     steps:
       - run:
           name: Pull the git code
-          command: echo $STA_EC2_HOST ${STA_EC2_HOST} "${STA_EC2_HOST}"
+          command: echo $ec2_host
       - run:
           name: Pull the git code
           command: ssh ec2-user@${STA_EC2_HOST} git pull origin <<parameters.branch-name>>
