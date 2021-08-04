@@ -12,14 +12,12 @@ jobs:
       enabled: true
     steps:
       - run:
-          name: Pull the git code
-          command: echo $ec2_host
-      - run:
           name: Install git
-          command: sudo apt update && sudo apt install git-all -y
+          command: ssh ec2-user@$ec2_host sudo yum install git -y
       -  run:
-          name: Pull the git code
+          name: Install Git and Pull the git code
           command: ssh ec2-user@$ec2_host git pull origin <<parameters.branch-name>>
+
       - run:
           name: Stop the running docker containers
           command: ssh ec2-user@<$ec2_host docker-compose down --v
