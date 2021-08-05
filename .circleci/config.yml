@@ -8,7 +8,7 @@ jobs:
           type: string
         branch-name:
           type: string
-          default: main
+          default: master
     machine:
       enabled: true
     steps:
