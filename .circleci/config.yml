@@ -8,11 +8,10 @@ jobs:
           type: string
         branch-name:
           type: string
-          default: main
+          default: https://github.com/agustinasierralima/CI-Docker-AWS.git
     machine:
       enabled: true
     steps:
-      - checkout
       - run:
           name: Install git
           command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host sudo yum install git -y
