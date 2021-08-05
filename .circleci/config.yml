@@ -12,6 +12,7 @@ jobs:
     machine:
       enabled: true
     steps:
+      - checkout
       - run:
           name: Install git
           command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host sudo yum install git -y
