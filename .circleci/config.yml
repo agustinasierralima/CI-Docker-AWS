@@ -11,19 +11,29 @@ jobs:
           default: main
     machine:
       enabled: true
+    working_directory: ~/main
     steps:
+      - add_ssh_keys:
+                  fingerprints:
+                      - ""
+      - checkout
       - run:
-          name: Install git
-          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host sudo yum install git -y
-      -  run:
-          name: Install Git and Pull the git code
-          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host git init && git clone <<parameters.branch-name>>
-
+          name: Add Key to Known hosts
+          command: ssh-keyscan $ec2_host >> ~/.ssh/known_hosts 
       - run:
           name: Stop the running docker containers
           command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host docker-compose down --v
       - run:
-          name: Restart the containers
+          name: Clean Files
+          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "cd /home/ec2-user; sudo rm -rf *"
+      - run:
+          name: Clean Images
+          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "sudo docker rmi -f $(sudo docker images -a -q)"
+      - run:
+          name: Copy compose and env to remote host
+          command: scp -r $PWD/main/* ec2-user@$ecs_host:/home/ec2-user         
+      - run:
+          name: Run Compose + Build
           command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host docker-compose up --build -d
       - run:
           name: Run the migrations
