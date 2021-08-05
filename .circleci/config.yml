@@ -8,25 +8,26 @@ jobs:
           type: string
         branch-name:
           type: string
+          default: main
     machine:
       enabled: true
     steps:
       - run:
           name: Install git
-          command: ssh ec2-user@$ec2_host sudo yum install git -y
+          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host sudo yum install git -y
       -  run:
           name: Install Git and Pull the git code
-          command: ssh ec2-user@$ec2_host git pull origin <<parameters.branch-name>>
+          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host git pull origin <<parameters.branch-name>>
 
       - run:
           name: Stop the running docker containers
-          command: ssh ec2-user@<$ec2_host docker-compose down --v
+          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host docker-compose down --v
       - run:
           name: Restart the containers
-          command: ssh ec2-user@$ec2_host docker-compose up --build -d
+          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host docker-compose up --build -d
       - run:
           name: Run the migrations
-          command: ssh ec2-user@$ec2_host "docker exec ic-web rake db:migrate"
+          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "docker exec ic-web rake db:migrate"
 workflows:
   build-and-deploy:
     jobs:
