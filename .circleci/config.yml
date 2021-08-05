@@ -31,7 +31,7 @@ jobs:
           command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "sudo docker rmi -f $(sudo docker images -a -q)" || true
       - run:
           name: Copy compose and env to remote host
-          command: scp -r $PWD/main/* ec2-user@$ecs_host:/home/ec2-user         
+          command: scp -r $PWD/main/* ec2-user@$ec2_host:/home/ec2-user         
       - run:
           name: Run Compose + Build
           command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host docker-compose up --build -d
