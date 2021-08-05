@@ -17,7 +17,7 @@ jobs:
           command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host sudo yum install git -y
       -  run:
           name: Install Git and Pull the git code
-          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host git init && git pull clone <<parameters.branch-name>>
+          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host git init && git clone <<parameters.branch-name>>
 
       - run:
           name: Stop the running docker containers
