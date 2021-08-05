@@ -15,7 +15,7 @@ jobs:
     steps:
       - add_ssh_keys:
                   fingerprints:
-                      - ""
+                      - "d5:15:5d:c6:2a:93:e9:02:48:d0:0e:b2:20:20:6c:43"
       - checkout
       - run:
           name: Add Key to Known hosts
