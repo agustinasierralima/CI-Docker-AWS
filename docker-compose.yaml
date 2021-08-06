@@ -2,7 +2,7 @@ version: '3'
 services:
     
     app:
-      build: ./ruby-hello-world
+      build: ./docker-ruby-hello-world
         networks:
            - deploy-net     
     
