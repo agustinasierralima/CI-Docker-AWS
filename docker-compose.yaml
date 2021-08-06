@@ -1,6 +1,11 @@
 version: '3'
 services:
-
+    
+    app:
+      build: ./ruby-hello-world
+        networks:
+           - deploy-net     
+    
     proxy:
         build: ./nginx
         volumes:
