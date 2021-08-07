@@ -34,10 +34,7 @@ jobs:
           command: scp -r $PWD ec2-user@$ec2_host:/home/ec2-user         
       - run:
           name: Run Compose + Build
-          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "cd /home/ec2-user/main; sudo docker-compose  up --build -d"
-      - run:
-          name: Run the migrations
-          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "docker exec ic-web rake db:migrate"
+          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "cd /home/ec2-user/main; sudo docker-compose  up --build -d" 
 workflows:
   build-and-deploy:
     jobs:
