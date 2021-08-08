@@ -18,6 +18,14 @@ jobs:
                       - "d5:15:5d:c6:2a:93:e9:02:48:d0:0e:b2:20:20:6c:43"
       - checkout
       - run:
+          name: install aws_cli
+          command: |
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+              sudo ./aws/install
+
+
+      - run:
           name: Add Key to Known hosts
           command: ssh-keyscan $ec2_host >> ~/.ssh/known_hosts 
       - run:
