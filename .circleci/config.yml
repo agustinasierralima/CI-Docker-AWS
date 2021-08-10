@@ -22,7 +22,7 @@ jobs:
     working_directory: ~/main
     environment: *env-vars
     docker:
-      - image: docker:17.05.0-ce-git
+      - image: exploit90/docker-ce-git-aws
     steps:
       - checkout
       - setup_remote_docker
