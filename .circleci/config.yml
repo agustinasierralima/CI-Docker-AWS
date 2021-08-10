@@ -32,7 +32,7 @@ jobs:
           name: Install Dependencies
           command: |
              sudo apt-get update
-             sudo apt-install \
+             sudo apt-get install \
              apt-transport-https \
              curl \
              gnupg \
