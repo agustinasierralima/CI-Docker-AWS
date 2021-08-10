@@ -91,7 +91,7 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-      # Deploy staging
+      - build
       - deploy-into-aws:
           ec2-host: $ec2_host
           branch-name: "main"
