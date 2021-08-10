@@ -1,7 +1,7 @@
 ecr-login: &ecr-login
   name: aws-ecr-Login
   command: |
-     apk add --no-cache install curl -y
+     apk add --no-cache install curl
      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
      unzip awscliv2.zip 
      sudo ./aws/install
@@ -100,6 +100,8 @@ workflows:
             branches:
               only:
                 - main
+          requires:
+            - build
       # Deploy PROD
       - deploy-into-aws:
           ec2-host: $RC_EC2_HOST
@@ -108,3 +110,5 @@ workflows:
             branches:
               only:
                 - produccion
+          requires:
+            - build
