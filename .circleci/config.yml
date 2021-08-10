@@ -18,14 +18,28 @@ env-vars: &env-vars
 
 version: 2.1
 jobs:
-  build:
+  image_build:
+    machine:
+      enabled: true
     working_directory: ~/main
     environment: *env-vars
-    docker:
-      - image: ubuntu
+    #docker:
+      #- image: ubuntu
     steps:
-      - checkout
-      - setup_remote_docker
+      #- checkout
+      #- setup_remote_docker
+      - run:
+          name: Install Dependencies
+          command: |
+             sudo apt-get update
+             sudo apt-install \
+             apt-transport-https \
+             curl \
+             gnupg \
+             lsb-release
+             curl -fsSL https://downloand.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+             sudo apt-get install docker-ce docker-ce-cli containerd.io
+
       - run: *ecr-login
       - run:
           name: Build application Docker image
@@ -92,7 +106,7 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-      - build
+      - image_build
       - deploy-into-aws:
           ec2-host: $ec2_host
           branch-name: "main"
@@ -101,7 +115,7 @@ workflows:
               only:
                 - main
           requires:
-            - build
+            - image_build
       # Deploy PROD
       - deploy-into-aws:
           ec2-host: $RC_EC2_HOST
@@ -111,4 +125,4 @@ workflows:
               only:
                 - produccion
           requires:
-            - build
+            - image_build
