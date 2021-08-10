@@ -21,7 +21,7 @@ jobs:
     working_directory: ~/main
     environment: *env-vars
     docker:
-      - image: docker:git
+      - image: ubuntu
     steps:
       - checkout
       - setup_remote_docker
