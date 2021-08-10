@@ -20,7 +20,7 @@ jobs:
     working_directory: ~/main
     environment: *env-vars
     docker:
-      - image: exploit90/docker-ce-git-aws
+      - image: amazon/aws-cli
     steps:
       - checkout
       - setup_remote_docker
