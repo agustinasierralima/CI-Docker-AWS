@@ -1,7 +1,51 @@
-version: 2.1
-orbs:
+ecr-login: &ecr-login
+  name: aws-ecr-Login
+  command: |
+     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+     unzip awscliv2.zip 
+     sudo ./aws/install
+     aws configure set region $REGION
+     aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+     aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+     aws ecr get-login-password --region us-east-1 > token
+     cat token | docker login --username AWS --password-stdin $AWS_REGISTRY
 
+env-vars: &env-vars
+  DOCKER_TAG : $CIRCLE_SHA1:$CIRCLE_BUILD_NUM
+  DOCKER_IMAGE: $CIRCLE_PROJECT_REPONAME:latest
+
+
+version: 2.1
 jobs:
+  build:
+    working_directory: ~/main
+    environment: *env-vars
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: *ecr-login
+      - run:
+          name: Build application Docker image
+          command: |
+            docker build \
+               --build-arg DATABASE_HOST=$DATABASE_HOST \
+               --build-arg DATABASE_USER=$DATABASE_USER \
+               --build-arg DATABASE_PASSWORD=$DATABASE_PASSWORD \
+               --build-arg DATABASE_URL=$DATABASE_URL \
+               --build-arg RAILS_ENV=$RAILS_ENV \
+               --build-arg RACK_ENV=$RACK_ENV \
+               --build-arg RAILS_LOG_TO_STDOUT=$RAILS_LOG_TO_STDOUT \
+               --build-arg RAILS_SERVE_STATIC_FILES=$RAILS_SERVE_STATIC_FILES \
+               --build-arg S3_ACCESSKEYID=$S3_ACCESSKEYID \
+               --build-arg S3_SECRETACCESSKEY=$S3_SECRETACCESSKEY \
+               --build-arg SECRET_KEY_BASE=$SECRET_KEY_BASE \
+            docker build -t $DOCKER_TAG .
+            docker push $AWS_REGISTRY/AWS_REPO_STAGING:$DOCKER_TAG
+            docker tag $DOCKER_TAG $DOCKER_IMAGE
+            docker push $AWS_REGISTRY/AWS_REPO_STAGING:$DOCKER_IMAGE
+
   deploy-into-aws:
     parameters:
         ec2-host:
@@ -18,14 +62,6 @@ jobs:
                       - "d5:15:5d:c6:2a:93:e9:02:48:d0:0e:b2:20:20:6c:43"
       - checkout
       - run:
-          name: install aws_cli
-          command: |
-              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-              unzip awscliv2.zip
-              sudo ./aws/install
-
-
-      - run:
           name: Add Key to Known hosts
           command: ssh-keyscan $ec2_host >> ~/.ssh/known_hosts 
       - run:
@@ -39,10 +75,18 @@ jobs:
           command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "sudo docker rmi $(sudo docker images --quiet)" || true
       - run:
           name: Copy compose and env to remote host
-          command: scp -r $PWD ec2-user@$ec2_host:/home/ec2-user         
+          command: | 
+            scp ./docker-compose.yml ec2-user@$ec2_host:/home/ec2-user
+            scp ./nginx.conf ec2-user@$ec2_host:/home/ec2-user
+            scp ./env-cerbot.env ec2-user@$ec2_host:/home/ec2-user         
       - run:
-          name: Run Compose + Build
-          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "cd /home/ec2-user/main; sudo docker-compose  up --build -d" 
+          name: login Aws Registry
+          command: |
+            ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "/usr/local/bin/aws ecr get-login-password --region us-east-1 > token"
+            ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "cat token | docker login --username AWS --password-stdin 542185263552.dkr.ecr.us-east-1.amazonaws.com"
+      - run:
+          name: Run Compose
+          command: ssh -o StrictHostKeyChecking=no ec2-user@$ec2_host "cd /home/ec2-user/main; sudo docker-compose up -d"
 workflows:
   build-and-deploy:
     jobs:
