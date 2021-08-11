@@ -4,8 +4,9 @@ ecr-login: &ecr-login
      sudo apt-get install curl unzip
      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
      unzip awscliv2.zip aws
-     wich aws
-     sudo ./aws/install || true
+     echo $PWD
+     ls -ltr
+     sudo ./aws/install
      aws --version
      aws_access_key_id=AKIAX4PGCSHAFYGYR7JU aws_secret_access_key=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 region=us-east-1 aws configure set aws_secret_access_key $aws_secret_access_key aws_access_key_id $aws_access_key_id
      aws ecr get-login-password --region us-east-1 > token
