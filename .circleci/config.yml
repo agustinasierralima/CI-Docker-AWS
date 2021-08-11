@@ -4,6 +4,7 @@ ecr-login: &ecr-login
      apk add curl unzip
      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
      unzip awscliv2.zip /usr/local/bin/aws
+     wich aws
      ./aws/install || true
      /usr/local/bin/aws --version
      aws_access_key_id=AKIAX4PGCSHAFYGYR7JU aws_secret_access_key=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 region=us-east-1 /usr/local/bin/aws configure set aws_secret_access_key $aws_secret_access_key aws_access_key_id $aws_access_key_id
