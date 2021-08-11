@@ -45,7 +45,7 @@ jobs:
            aws ecr get-login-password --region us-east-1 > token
            cat token | docker login --username AWS --password-stdin $AWS_REGISTRY
       - run:
-         name: install docker
+         name: check docker
          command: sudo docker -v
       - run:
           name: Build application Docker image
@@ -63,9 +63,9 @@ jobs:
                --build-arg S3_SECRETACCESSKEY=$S3_SECRETACCESSKEY \
                --build-arg SECRET_KEY_BASE=$SECRET_KEY_BASE \
             docker build -t $DOCKER_TAG .
-            docker push $AWS_REGISTRY/AWS_REPO_STAGING:$DOCKER_TAG
+            docker push $AWS_REGISTRY/$AWS_REPO_STAGING:$DOCKER_TAG
             docker tag $DOCKER_TAG $DOCKER_IMAGE
-            docker push $AWS_REGISTRY/AWS_REPO_STAGING:$DOCKER_IMAGE
+            docker push $AWS_REGISTRY/$AWS_REPO_STAGING:$DOCKER_IMAGE
 
   deploy-into-aws:
     parameters:
