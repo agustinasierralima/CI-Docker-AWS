@@ -21,14 +21,22 @@ orbs:
   aws-cli: circleci/aws-cli@2.0
 jobs:
   image_build:
+    machine:
+      enabled: true
     working_directory: ~/main
     environment: *env-vars
-    docker:
-      - image: docker:stable
+    #docker:
+    #  - image: docker:stable
     steps:
       - checkout
-      - setup_remote_docker
+      #- setup_remote_docker
       - run: *ecr-login
+      - run:
+         name: install docker
+         command: |
+           apt-get install docker
+           systemctl enable docker
+           systemctl start docker
       - run:
           name: Build application Docker image
           command: |
