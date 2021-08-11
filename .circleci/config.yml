@@ -1,7 +1,7 @@
 ecr-login: &ecr-login
   name: aws-ecr-Login
   command: |
-     apk add curl unzip
+     apt-get install curl unzip
      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
      unzip awscliv2.zip /usr/local/bin/aws
      wich aws
