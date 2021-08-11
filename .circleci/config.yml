@@ -46,7 +46,7 @@ jobs:
            cat token | docker login --username AWS --password-stdin $AWS_REGISTRY
       - run:
          name: install docker
-         command: curl https://releases.rancher.com/install-docker/20.10.sh | sh
+         command: sudo apt-get install docker.io
       - run:
           name: Build application Docker image
           command: |
