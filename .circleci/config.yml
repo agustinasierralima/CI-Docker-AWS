@@ -62,9 +62,9 @@ jobs:
                --build-arg S3_ACCESSKEYID=$S3_ACCESSKEYID \
                --build-arg S3_SECRETACCESSKEY=$S3_SECRETACCESSKEY \
                --build-arg SECRET_KEY_BASE=$SECRET_KEY_BASE \
-            docker build -t $DOCKER_TAG .
-            docker push $AWS_REGISTRY/$AWS_REPO_STAGING:$DOCKER_TAG
-            docker tag $DOCKER_TAG $DOCKER_IMAGE
+            docker build tag $AWS_REPO_STAGING:$CIRCLE_SHA1 .
+            docker push $AWS_REGISTRY/$AWS_REPO_STAGING:$AWS_REPO_STAGING:$CIRCLE_SHA1
+            docker tag $AWS_REPO_STAGING:$CIRCLE_SHA1 $DOCKER_IMAGE
             docker push $AWS_REGISTRY/$AWS_REPO_STAGING:$DOCKER_IMAGE
 
   deploy-into-aws:
