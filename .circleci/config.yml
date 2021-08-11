@@ -1,16 +1,16 @@
 ecr-login: &ecr-login
   name: aws-ecr-Login
   command: |
-     sudo apt-get install curl unzip
-     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-     unzip awscliv2.zip
-     echo $PWD
-     ls -ltr
-     sudo ./aws/install
-     aws --version
-     aws_access_key_id=AKIAX4PGCSHAFYGYR7JU aws_secret_access_key=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 region=us-east-1 aws configure set aws_secret_access_key $aws_secret_access_key aws_access_key_id $aws_access_key_id
-     aws ecr get-login-password --region us-east-1 > token
-     cat token | docker login --username AWS --password-stdin $AWS_REGISTRY
+    sudo apt-get install curl unzip
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    echo $PWD
+    ls -ltr
+    sudo ./aws/install
+    aws --version
+    aws_access_key_id=$AWS_ACCESS_KEY_ID aws_secret_access_key=AWS_SECRET_ACCESS_KEY region=$REGION aws configure set aws_secret_access_key $aws_secret_access_key aws_access_key_id $aws_access_key_id
+    aws ecr get-login-password --region us-east-1 > token
+    cat token | docker login --username AWS --password-stdin $AWS_REGISTRY
 
 env-vars: &env-vars
   DOCKER_TAG : $CIRCLE_SHA1:$CIRCLE_BUILD_NUM
@@ -31,19 +31,7 @@ jobs:
     steps:
       - checkout
       #- setup_remote_docker
-      - run:
-          name: aws-cli install
-          command: |
-           sudo apt-get install curl unzip
-           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-           unzip awscliv2.zip
-           echo $PWD
-           ls -ltr
-           sudo ./aws/install
-           aws --version
-           aws_access_key_id=$AWS_ACCESS_KEY_ID aws_secret_access_key=AWS_SECRET_ACCESS_KEY region=$REGION aws configure set aws_secret_access_key $aws_secret_access_key aws_access_key_id $aws_access_key_id
-           aws ecr get-login-password --region us-east-1 > token
-           cat token | docker login --username AWS --password-stdin $AWS_REGISTRY
+      - run: *ecr-login
       - run:
          name: check docker
          command: sudo docker -v
@@ -63,7 +51,7 @@ jobs:
                --build-arg S3_ACCESSKEYID=$S3_ACCESSKEYID \
                --build-arg S3_SECRETACCESSKEY=$S3_SECRETACCESSKEY \
                --build-arg SECRET_KEY_BASE=$SECRET_KEY_BASE \
-            docker build -t $AWS_REPO_STAGING:$CIRCLE_SHA1 -f /docker-ruby-hello-world/Dockerfile
+            docker build -t $AWS_REPO_STAGING:$CIRCLE_SHA1 .
             docker push $AWS_REGISTRY/$AWS_REPO_STAGING:$AWS_REPO_STAGING:$CIRCLE_SHA1
             docker tag $AWS_REPO_STAGING:$CIRCLE_SHA1 $DOCKER_IMAGE
             docker push $AWS_REGISTRY/$AWS_REPO_STAGING:$DOCKER_IMAGE
