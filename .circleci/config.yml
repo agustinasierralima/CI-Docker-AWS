@@ -3,7 +3,7 @@ ecr-login: &ecr-login
   command: |
      sudo apt-get install curl unzip
      curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-     unzip awscliv2.zip aws
+     unzip awscliv2.zip
      echo $PWD
      ls -ltr
      sudo ./aws/install
@@ -36,7 +36,7 @@ jobs:
           command: |
            sudo apt-get install curl unzip
            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-           unzip awscliv2.zip aws
+           unzip awscliv2.zip
            echo $PWD
            ls -ltr
            sudo ./aws/install
